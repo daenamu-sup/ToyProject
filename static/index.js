@@ -1,0 +1,1 @@
+console.log("index.js 파일입니다.")
