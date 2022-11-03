@@ -34,11 +34,6 @@ def worry_detail():
     worry_detail = db.worry.find_one({'board_id':board_id},{'_id':False})
     print(worry_detail)
     return jsonify({'worry':worry_detail})
-    
-@app.route('/worry/list', methods=['GET'])
-def worry_list():
-    worries_list = list(db.worry.find({}, {'_id': False}))
-    return jsonify({'worries': worries_list})
 
 @app.route('/worry/create', methods=["POST"])
 def worry_create():
