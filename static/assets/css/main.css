@@ -12,6 +12,14 @@ a {
 input, textarea {
   font-family: "KyoboHand", cursive;
 }
+.my_board{
+            width: 95%;
+            max-width: 700px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px 0px gray;
+            margin: 20px auto;
+            border-radius: 20px;
+        }
 
 /*--------------------------------------------------------------
 # Header
