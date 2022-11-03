@@ -43,6 +43,31 @@
 
 <body>
 
+  <!-- 비밀번호 확인을 위한 Modal -->
+  <div class="modal fade" id="pw-check-modal" tabindex="-1">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">비밀번호 확인</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <input type="password" class="form-control" placeholder="게시글 작성 시 사용한 비밀번호를 입력해 주세요" id="pw-check">
+            <div class="text-danger ps-2 mt-1" id="pw-check-fail"></div>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-primary" id="pw-check-submit">확인</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button type="button" id="pw-check-modal-btn" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#pw-check-modal"></button>
+
   <!-- ======= Header ======= -->
   {% include "header.html" %}
   <!-- End Header -->
@@ -74,12 +99,12 @@
                 <p id="desc"></p>
               </div><!-- End post content -->
 
-              <div class="text-center mt-5">
+              <div class="text-center mt-5" id="modal-btn-zone">
                 <div class="btn-group">
-                  <button type="button" class="btn btn-secondary">수정</button>
+                  <button type="button" class="btn btn-secondary modal-btn" id="edit-btn">수정</button>
                 </div>
                 <div class="btn-group">
-                  <button type="button" class="btn btn-secondary">삭제</button>
+                  <button type="button" class="btn btn-secondary modal-btn" id="del-btn">삭제</button>
                 </div>
                 <div class="btn-group">
                   <a href="/" class="btn btn-secondary">목록</a>
