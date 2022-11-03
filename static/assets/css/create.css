@@ -1,0 +1,14 @@
+.comments .my_board {
+    margin-top: 20px;
+    padding: 15px;
+}
+.comments .my_board input, .comments .my_board textarea{
+    padding: 10px 10px;
+    font-size: 14px;
+}
+.comments .my_board .form-group {
+    margin-bottom: 25px;
+}
+.col-lg-7 {
+    margin: 20px auto;
+}
