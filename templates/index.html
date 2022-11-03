@@ -8,6 +8,8 @@
   <title>대나무숲 - 익명 고민 상담소</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
+  <!-- jQuery CDN -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
   <!-- Favicons -->
   <link href="/static/assets/img/favicon.png" rel="icon">
@@ -43,7 +45,7 @@
   <header id="hero" class="hero">
     <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light py-3">
   <div class="container">
-    <a class="navbar-brand" href="#">대나무숲</a>
+    <a class="navbar-brand" href="/">대나무숲</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -86,7 +88,7 @@
         <div class="row justify-content-center">
           <div class="col-lg-6 text-center">
             <h1 data-aos="fade-down" class="mb-5">익명 고민 상담소 <i class="bi bi-chat-dots"></i></h1>
-            <a data-aos="fade-up" data-aos-delay="200" href="#get-started" class="btn btn-primary btn-lg">고민 작성하기</a>
+              <a data-aos="fade-up" data-aos-delay="200" href="/create" class="btn btn-primary btn-lg">고민 작성하기</a>
           </div>
         </div>
       </div>
@@ -105,7 +107,7 @@
 
           <li class="nav-item col-3">
             <a class="nav-link active show" data-bs-toggle="tab" data-bs-target="#tab-1">
-              <h4>인기 조회순</h4>
+              <h4>최신순</h4>
             </a>
           </li><!-- End tab nav item -->
 
@@ -116,7 +118,7 @@
 
           <li class="nav-item col-3">
             <a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-3">
-              <h4>최신순</h4>
+              <h4>인기 조회순</h4>
             </a>
           </li><!-- End tab nav item -->
 
@@ -128,80 +130,29 @@
             <div class="row justify-content-center">
               <div class="col-lg-9 order-2 order-lg-1 mt-3 mt-lg-0 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="100">
                 <table class="table table-hover">
-  <thead>
-    <tr>
-      <th scope="col">글번호</th>
-      <th scope="col">제목</th>
-      <th scope="col">작성자</th>
-      <th scope="col">작성시간</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-    <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-    <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  </tbody>
-</table>
+                    <colgroup>
+                        <col style="width: 10%">
+                        <col style="width: 50%">
+                        <col style="width: 10%">
+                        <col style="width: 10%">
+                        <col style="width: 20%">
+                    </colgroup>
+                  <thead>
+                    <tr>
+                      <th scope="col">글번호</th>
+                      <th scope="col">제목</th>
+                      <th scope="col">닉네임</th>
+                        <th scope="col">조회수</th>
+                      <th scope="col">작성시간</th>
+                    </tr>
+                  </thead>
+                  <tbody id="worry-list">
+
+                  </tbody>
+                </table>
               </div>
             </div>
-          </div><!-- End tab content item -->
+          </div><!--최신순 End tab content item -->
 
           <div class="tab-pane" id="tab-2">
             <div class="row justify-content-center">
@@ -218,61 +169,13 @@
   <tbody>
     <tr class="table-light">
       <th scope="row">342</th>
-      <td>아 배고프다</td>
+      <td>댓글순</td>
       <td>뚠둔이</td>
       <td>2022-11-11</td>
     </tr>
     <tr class="table-light">
       <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-    <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
+      <td>댓글순</td>
       <td>뚠둔이</td>
       <td>2022-11-11</td>
     </tr>
@@ -280,7 +183,7 @@
 </table>
               </div>
             </div>
-          </div><!-- End tab content item -->
+          </div><!--댓글순 End tab content item -->
 
           <div class="tab-pane" id="tab-3">
             <div class="row justify-content-center">
@@ -297,61 +200,13 @@
   <tbody>
     <tr class="table-light">
       <th scope="row">342</th>
-      <td>아 배고프다</td>
+      <td>인기조회순</td>
       <td>뚠둔이</td>
       <td>2022-11-11</td>
     </tr>
     <tr class="table-light">
       <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-    <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
-      <td>뚠둔이</td>
-      <td>2022-11-11</td>
-    </tr>
-  <tr class="table-light">
-      <th scope="row">342</th>
-      <td>아 배고프다</td>
+      <td>인기조회순</td>
       <td>뚠둔이</td>
       <td>2022-11-11</td>
     </tr>
@@ -359,7 +214,7 @@
 </table>
               </div>
             </div>
-          </div><!-- End tab content item -->
+          </div><!-- 인기조회순 End tab content item -->
 
         </div>
 
@@ -404,6 +259,7 @@
 
   <!-- Template Main JS File -->
   <script src="/static/assets/js/main.js"></script>
+  <script src="/static/assets/js/list.js"></script>
 
 </body>
 
