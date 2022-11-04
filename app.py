@@ -35,8 +35,13 @@ def worry_list():
 @app.route('/worry/detail', methods=['GET'])
 def worry_detail():
     board_id = int(request.args.get('id'))
-    worry_detail = db.worry.find_one({'board_id':board_id},{'_id':False})
-    return jsonify({'worry':worry_detail})
+    worry_detail = db.worry.find_one({'board_id': board_id},{'_id': False})
+
+    # 들어 오는 순간 바로 조회수1 증가 하고 update.
+    view_count = int(worry_detail['view_count']) + 1
+    db.worry.update_one({"board_id": board_id}, {"$set": {"view_count": str(view_count)}})
+    worry_detail = db.worry.find_one({'board_id': board_id}, {'_id': False})
+    return jsonify({'worry': worry_detail})
 
 @app.route('/worry/create', methods=["POST"])
 def worry_create():
@@ -57,15 +62,7 @@ def worry_create():
         'view_count': view_count,
         'created_at': now,
         'deleted_at': 'null',
-        'comment' : {
-            'comment_id': '1',
-            'nickname': 'gyo',
-            'password': '1234',
-            'desc': '먹으셈 ㅇㅇ',
-            'create_at': '2022-10-31 21:44:23',
-            'deleted_at': 'null',
-            'likes': '11',
-        },
+        'comment': [],
     }
     db.worry.insert_one(doc)
     return jsonify({'msg': 'db등록 완료!'})
