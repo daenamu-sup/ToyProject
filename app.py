@@ -22,6 +22,10 @@ def create():
 def detail():
     return render_template('detail.html')
 
+@app.route('/edit')
+def edit():
+    return render_template('edit.html')
+
 # API 부분
 @app.route('/worry/list', methods=['GET'])
 def worry_list():
@@ -32,7 +36,6 @@ def worry_list():
 def worry_detail():
     board_id = int(request.args.get('id'))
     worry_detail = db.worry.find_one({'board_id':board_id},{'_id':False})
-    print(worry_detail)
     return jsonify({'worry':worry_detail})
 
 @app.route('/worry/create', methods=["POST"])
@@ -66,6 +69,17 @@ def worry_create():
     }
     db.worry.insert_one(doc)
     return jsonify({'msg': 'db등록 완료!'})
+
+@app.route('/worry/pw_check', methods=["POST"])
+def worry_pw_check():
+    board_id_receive = int(request.form['board_id_give'])
+    password_receive = int(request.form['password_give'])
+    worry_detail = db.worry.find_one({'board_id': board_id_receive}, {'_id': False})
+    password = int(worry_detail['password'])
+    if password == password_receive:
+        return jsonify({'msg': True})
+    else:
+        return jsonify({'msg': False})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
