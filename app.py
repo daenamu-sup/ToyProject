@@ -39,7 +39,7 @@ def worry_detail():
 
     # 들어 오는 순간 바로 조회수1 증가 하고 update.
     view_count = int(worry_detail['view_count']) + 1
-    db.worry.update_one({"board_id": board_id}, {"$set": {"view_count": str(view_count)}})
+    db.worry.update_one({"board_id": board_id}, {"$set": {"view_count": view_count}})
     worry_detail = db.worry.find_one({'board_id': board_id}, {'_id': False})
     return jsonify({'worry': worry_detail})
 
@@ -52,7 +52,7 @@ def worry_create():
     worries_list = list(db.worry.find({}, {'_id':False}))
     board_id = len(worries_list)+1
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    view_count = '0'
+    view_count = 0
     doc = {
         'board_id': board_id,
         'nickname': nickname_receive,
@@ -70,10 +70,36 @@ def worry_create():
 @app.route('/worry/pw_check', methods=["POST"])
 def worry_pw_check():
     board_id_receive = int(request.form['board_id_give'])
-    password_receive = int(request.form['password_give'])
+    password_receive = request.form['password_give']
     worry_detail = db.worry.find_one({'board_id': board_id_receive}, {'_id': False})
-    password = int(worry_detail['password'])
+    password = worry_detail['password']
     if password == password_receive:
+        return jsonify({'msg': True})
+    else:
+        return jsonify({'msg': False})
+
+@app.route('/worry/edit', methods=["POST"])
+def worry_edit():
+    board_id_receive = int(request.form['board_id_give'])
+    nickname_receive = request.form['nickname_give']
+    title_receive = request.form['title_give']
+    password_receive = request.form['password_give']
+    desc_receive = request.form['desc_give']
+
+    # 해당 board_id 데이터를 조회
+    worry_detail = db.worry.find_one({'board_id': board_id_receive}, {'_id': False})
+    password = worry_detail['password']
+    # /worry/detail을 2번 호출하기 때문에 -2
+    view_count = int(worry_detail['view_count']) - 2
+
+    # 비밀번호가 일치하는지 확인 후
+    # 일치하면 update하고 True 리턴, 일치하지 않으면 False return
+    if password == password_receive:
+        db.worry.update_one({'board_id': board_id_receive},
+                            {'$set': {'nickname': nickname_receive,
+                                      'title':title_receive,
+                                      'desc':desc_receive,
+                                      'view_count':view_count}})
         return jsonify({'msg': True})
     else:
         return jsonify({'msg': False})
