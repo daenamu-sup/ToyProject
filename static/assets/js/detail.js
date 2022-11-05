@@ -94,9 +94,11 @@ function pw_check(edit_or_del) {
                 if (response['msg'] && edit_or_del === 'edit-btn') {
                     window.location.replace('/edit?id=' + board_id);
                 }
-                // 비밀번호가 일치하고, del 버튼을 클릭 했으면 alert
+                // 비밀번호가 일치하고, del 버튼을 클릭 했으면 alert 띄우고 del 함수 호출
                 else if (response['msg'] && edit_or_del === 'del-btn') {
-                    alert('정말 삭제하시겠습니까?');
+                    if (confirm('정말 삭제하시겠습니까?')) {
+                        del(board_id);
+                    }
                 }
                 // 비밀번호가 일치하지 않으면, 안내 문구 출력
                 else {
@@ -107,4 +109,27 @@ function pw_check(edit_or_del) {
             }
         });
     }
+}
+
+// 삭제여부 확인하고 게시글 삭제(deleted_at 업데이트)
+function del(board_id) {
+    $.ajax({
+        type: 'POST',
+        url: '/worry/delete',
+        data: {
+            board_id_give: board_id,
+        },
+        success: function (response) {
+
+            // 삭제(deleted_at 업데이트)에 성공하면, alert 띄우고 메인페이지로 이동
+            if (response['msg']) {
+                alert('게시글이 삭제되었습니다.');
+                window.location.replace('/');
+            }
+            // 삭제(deleted_at 업데이트)에 실패하면, 안내 alert
+            else {
+                alert('문제가 발생했습니다. 관리자에게 문의해 주세요.');
+            }
+        }
+    });
 }

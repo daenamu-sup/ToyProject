@@ -29,7 +29,7 @@ def edit():
 # API 부분
 @app.route('/worry/list', methods=['GET'])
 def worry_list():
-    worry_list = list(db.worry.find({},{'_id':False}))
+    worry_list = list(db.worry.find({'deleted_at':None},{'_id':False}))
     return jsonify({'worries':worry_list})
 
 @app.route('/worry/detail', methods=['GET'])
@@ -61,7 +61,7 @@ def worry_create():
         'desc': desc_receive,
         'view_count': view_count,
         'created_at': now,
-        'deleted_at': 'null',
+        'deleted_at': None,
         'comment': [],
     }
     db.worry.insert_one(doc)
@@ -100,6 +100,18 @@ def worry_edit():
                                       'title':title_receive,
                                       'desc':desc_receive,
                                       'view_count':view_count}})
+        return jsonify({'msg': True})
+    else:
+        return jsonify({'msg': False})
+
+@app.route('/worry/delete', methods=["POST"])
+def worry_delete():
+    board_id_receive = int(request.form['board_id_give'])
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # updateResult 변수에 업데이트의 결과를 담아서 클라이언트로 전달(1: 성공, 0: 실패)
+    updateResult = db.worry.update_one({'board_id': board_id_receive},{'$set': {'deleted_at': now}})
+    if updateResult.modified_count == 1:
         return jsonify({'msg': True})
     else:
         return jsonify({'msg': False})
