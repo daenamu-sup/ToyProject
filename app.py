@@ -89,11 +89,11 @@ def worry_edit():
     # 해당 board_id 데이터를 조회
     worry_detail = db.worry.find_one({'board_id': board_id_receive}, {'_id': False})
     password = worry_detail['password']
-    # /worry/detail을 2번 호출하기 때문에 -2
+    # /worry/detail을 2번 호출하기 때문에 view_count -2
     view_count = int(worry_detail['view_count']) - 2
 
     # 비밀번호가 일치하는지 확인 후
-    # 일치하면 update하고 True 리턴, 일치하지 않으면 False return
+    # 일치하면 update하고 True return, 일치하지 않으면 False return
     if password == password_receive:
         db.worry.update_one({'board_id': board_id_receive},
                             {'$set': {'nickname': nickname_receive,
