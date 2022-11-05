@@ -26,7 +26,7 @@ def detail():
 def edit():
     return render_template('edit.html')
 
-# API 부분
+# 게시글 API 부분
 @app.route('/worry/list', methods=['GET'])
 def worry_list():
     worry_list = list(db.worry.find({'deleted_at':None},{'_id':False}))
@@ -122,6 +122,30 @@ def worry_delete():
         return jsonify({'msg': True})
     else:
         return jsonify({'msg': False})
+
+# 댓글 API 부분
+@app.route('/comment/create', methods=["POST"])
+def comment_create():
+    board_id_receive = int(request.form['board_id_give'])
+    co_nickname_receive = request.form['co_nickname_give']
+    co_password_receive = request.form['co_password_give']
+    co_desc_receive = request.form['co_desc_give']
+    comment_list = db.worry.find_one({'board_id': board_id_receive}, {'_id': False})['comment']
+    comment_id = len(comment_list) + 1
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    doc = {
+        'comment_id': comment_id,
+        'nickname': co_nickname_receive,
+        'password': co_password_receive,
+        'desc': co_desc_receive,
+        'likes': 11,
+        'created_at': now,
+        'deleted_at': None
+    }
+
+    db.worry.update_one({"board_id": board_id_receive}, {"$push": {"comment": doc}})
+    return jsonify({'msg': '댓글 등록 완료!'})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

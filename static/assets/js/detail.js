@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', detail);
 document.getElementById('pw-check-submit').addEventListener('click', ()=> {pw_check(edit_or_del)});
+document.getElementById('co-sbm-btn').addEventListener('click', co_create);
 
 // url에서 board_id 가져오기
 const param = window.location.search;
@@ -140,4 +141,29 @@ function del(board_id) {
             }
         }
     });
+}
+
+// 서버로 댓글 데이터 보내기
+function co_create() {
+    let nickname = document.getElementById('co-nickname').value;
+    let password = document.getElementById('co-password').value;
+    let desc = document.getElementById('co-desc').value;
+
+    $.ajax({
+        type: 'POST',
+        url: '/comment/create',
+        data: {
+            board_id_give: board_id,
+            co_nickname_give: nickname,
+            co_password_give: password,
+            co_desc_give: desc,
+        },
+        success: function (response) {
+            alert(response['msg']);
+            detail();
+            document.getElementById('co-nickname').value = '';
+            document.getElementById('co-password').value = '';
+            document.getElementById('co-desc').value = '';
+        }
+    })
 }
