@@ -35,13 +35,20 @@ def worry_list():
 @app.route('/worry/detail', methods=['GET'])
 def worry_detail():
     board_id = int(request.args.get('id'))
-    worry_detail = db.worry.find_one({'board_id': board_id},{'_id': False})
 
-    # 들어 오는 순간 바로 조회수1 증가 하고 update.
-    view_count = int(worry_detail['view_count']) + 1
-    db.worry.update_one({"board_id": board_id}, {"$set": {"view_count": view_count}})
-    worry_detail = db.worry.find_one({'board_id': board_id}, {'_id': False})
-    return jsonify({'worry': worry_detail})
+    # 쿼리 조건: 해당 board_id를 가지고 있고, deleted_at이 null인 데이터
+    # 해당 데이터가 없다면, 즉 삭제된 글이라면 None을 return
+    worry_detail = db.worry.find_one({'$and': [{'board_id': board_id}, {'deleted_at': None}]}, {'_id': False})
+
+    # 찾는 데이터가 있으면 True와 해당 데이터 return, 없으면 False return
+    if worry_detail != None:
+        # 들어 오는 순간 바로 조회수1 증가 하고 update.
+        view_count = int(worry_detail['view_count']) + 1
+        db.worry.update_one({"board_id": board_id}, {"$set": {"view_count": view_count}})
+        worry_detail = db.worry.find_one({'board_id': board_id}, {'_id': False})
+        return jsonify({'msg': True, 'worry': worry_detail})
+    else:
+        return jsonify({'msg': False})
 
 @app.route('/worry/create', methods=["POST"])
 def worry_create():

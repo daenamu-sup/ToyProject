@@ -14,32 +14,34 @@ function detail() {
         data: {},
         success: function (response) {
 
-            // 게시글 부분
-            let rows = response['worry'];
-            let nickname = rows['nickname'];
-            let title = rows['title'];
-            let desc = rows['desc'];
-            let view_count = rows['view_count'];
-            let created_at = rows['created_at'];
+            // 해당 게시글이 삭제되지 않았으면, 화면에 출력
+            if (response['msg']) {
+                // 게시글 부분
+                let rows = response['worry'];
+                let nickname = rows['nickname'];
+                let title = rows['title'];
+                let desc = rows['desc'];
+                let view_count = rows['view_count'];
+                let created_at = rows['created_at'];
 
-            document.getElementById('nickname').innerText = nickname;
-            document.getElementById('title').innerText = title;
-            document.getElementById('desc').innerText = desc;
-            document.getElementById('view_count').innerText = view_count;
-            document.getElementById('created_at').innerText = created_at;
+                document.getElementById('nickname').innerText = nickname;
+                document.getElementById('title').innerText = title;
+                document.getElementById('desc').innerText = desc;
+                document.getElementById('view_count').innerText = view_count;
+                document.getElementById('created_at').innerText = created_at;
 
-            // 댓글 부분
-            document.getElementById('comment').innerHTML = '';
-            let comment = rows['comment'];
-            for (let i = 0; i < comment.length; i++) {
-                let comment_id = comment[i]['comment_id'];
-                let comment_nickname = comment[i]['nickname'];
-                let comment_password = comment[i]['password'];
-                let comment_desc = comment[i]['desc'];
-                let comment_created_at = comment[i]['created_at'];
-                let comment_likes =comment[i]['likes'];
+                // 댓글 부분
+                document.getElementById('comment').innerHTML = '';
+                let comment = rows['comment'];
+                for (let i = 0; i < comment.length; i++) {
+                    let comment_id = comment[i]['comment_id'];
+                    let comment_nickname = comment[i]['nickname'];
+                    let comment_password = comment[i]['password'];
+                    let comment_desc = comment[i]['desc'];
+                    let comment_created_at = comment[i]['created_at'];
+                    let comment_likes = comment[i]['likes'];
 
-                let temp_html = `<div class="comment mb-4 border-bottom">
+                    let temp_html = `<div class="comment mb-4 border-bottom">
                                     <div class="d-flex">
                                       <div class="comment-img"><img src="/static/assets/img/blog/comments-1.png" alt="comment-img" class="rounded-circle"></div>
                                       <div class="w-100">
@@ -53,7 +55,13 @@ function detail() {
                                       </div>
                                     </div>
                                 </div>`;
-                document.getElementById('comment').innerHTML += temp_html;
+                    document.getElementById('comment').innerHTML += temp_html;
+                }
+            }
+            // 해당 게시글이 삭제 되었으면, alert 띄우고 메인 페이지로 이동
+            else {
+                alert('삭제된 게시글입니다.')
+                window.location.replace('/');
             }
         }
     });
@@ -121,7 +129,7 @@ function del(board_id) {
         },
         success: function (response) {
 
-            // 삭제(deleted_at 업데이트)에 성공하면, alert 띄우고 메인페이지로 이동
+            // 삭제(deleted_at 업데이트)에 성공하면, alert 띄우고 메인 페이지로 이동
             if (response['msg']) {
                 alert('게시글이 삭제되었습니다.');
                 window.location.replace('/');
