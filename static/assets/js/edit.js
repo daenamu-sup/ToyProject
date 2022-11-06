@@ -29,32 +29,38 @@ function detail() {
 
 // 비밀번호가 일치하는지 확인하고 업데이트
 function edit() {
-    let nickname = document.getElementById('nickname').value;
     let title = document.getElementById('title').value;
     let password = document.getElementById('password').value;
     let desc = document.getElementById('desc').value;
 
-    $.ajax({
-        type: 'POST',
-        url: '/worry/edit',
-        data: {
-            board_id_give: board_id,
-            nickname_give: nickname,
-            title_give: title,
-            password_give: password,
-            desc_give: desc,
-        },
-        success: function (response) {
+    // 비밀번호 입력칸이 빈 칸이면, alert
+    if (password === '') {
+        alert('비밀번호를 입력해 주세요.')
+    }
+    // 비밀번호 입력칸이 빈 칸이 아니면, ajax 콜
+    else {
+        $.ajax({
+            type: 'POST',
+            url: '/worry/edit',
+            data: {
+                board_id_give: board_id,
+                title_give: title,
+                password_give: password,
+                desc_give: desc,
+            },
+            success: function (response) {
 
-            // 비밀번호가 일치하여 update 되었으면, 해당 detail 페이지로 이동
-            if (response['msg']) {
-                window.location.replace('/detail?id=' + board_id);
+                // 비밀번호가 일치하여 update 되었으면, 해당 detail 페이지로 이동
+                if (response['msg']) {
+                    window.location.replace('/detail?id=' + board_id);
+                }
+                // 비밀번호가 일치하지 않으면, alert 띄우고 안내 문구 출력
+                else {
+                    alert('비밀번호가 일치하지 않습니다. 다시 확인해 주세요.')
+                    document.getElementById('password-fail').innerText = '비밀번호가 일치하지 않습니다. 다시 확인해 주세요.';
+                    document.getElementById('password').value = '';
+                }
             }
-            // 비밀번호가 일치하지 않으면, alert
-            else {
-                alert('비밀번호가 일치하지 않습니다. 다시 확인해 주세요.')
-                document.getElementById('password').value ='';
-            }
-        }
-    })
+        });
+    }
 }
