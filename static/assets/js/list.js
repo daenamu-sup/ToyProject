@@ -8,7 +8,7 @@ function list() {
         success: function (response) {
             let rows = response['worries'];
             let recent_rows = [...rows].sort(function (a, b) {
-                        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+                        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
                     });
             let comment_rows = [...rows].sort(function (a, b) {
                         return b.comment.length - a.comment.length;
