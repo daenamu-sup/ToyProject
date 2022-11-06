@@ -58,7 +58,7 @@ def worry_create():
     desc_receive = request.form['desc_give']
     worries_list = list(db.worry.find({}, {'_id':False}))
     board_id = len(worries_list)+1
-    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    now = (datetime.datetime.now() + datetime.timedelta(hours=9)).strftime('%Y-%m-%d %H:%M:%S')
     view_count = 0
     doc = {
         'board_id': board_id,
@@ -112,7 +112,7 @@ def worry_edit():
 @app.route('/worry/delete', methods=["POST"])
 def worry_delete():
     board_id_receive = int(request.form['board_id_give'])
-    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    now = (datetime.datetime.now() + datetime.timedelta(hours=9)).strftime('%Y-%m-%d %H:%M:%S')
 
     # updateResult 변수에 업데이트의 결과를 담아서 클라이언트로 전달(1: 성공, 0: 실패)
     updateResult = db.worry.update_one({'board_id': board_id_receive},{'$set': {'deleted_at': now}})
@@ -134,7 +134,7 @@ def comment_create():
         comment_id = 0
     else:
         comment_id = comment_list[comment_idx]['comment_id'] + 1
-    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    now = (datetime.datetime.now() + datetime.timedelta(hours=9)).strftime('%Y-%m-%d %H:%M:%S')
 
     doc = {
         'comment_id': comment_id,
@@ -185,7 +185,7 @@ def comment_delete():
     board_id_receive = int(request.form['board_id_give'])
     co_comment_id_receive = int(request.form['co_comment_id_give'])
     co_password_receive = request.form['co_password_give']
-    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    now = (datetime.datetime.now() + datetime.timedelta(hours=9)).strftime('%Y-%m-%d %H:%M:%S')
 
     # 해당 board_id 데이터를 조회
     worry_detail = db.worry.find_one({'board_id': board_id_receive}, {'_id': False})
