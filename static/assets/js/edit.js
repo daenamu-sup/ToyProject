@@ -29,7 +29,6 @@ function detail() {
 
 // 비밀번호가 일치하는지 확인하고 업데이트
 function edit() {
-    let nickname = document.getElementById('nickname').value;
     let title = document.getElementById('title').value;
     let password = document.getElementById('password').value;
     let desc = document.getElementById('desc').value;
@@ -39,7 +38,6 @@ function edit() {
         url: '/worry/edit',
         data: {
             board_id_give: board_id,
-            nickname_give: nickname,
             title_give: title,
             password_give: password,
             desc_give: desc,

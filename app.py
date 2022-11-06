@@ -88,7 +88,6 @@ def worry_pw_check():
 @app.route('/worry/edit', methods=["POST"])
 def worry_edit():
     board_id_receive = int(request.form['board_id_give'])
-    nickname_receive = request.form['nickname_give']
     title_receive = request.form['title_give']
     password_receive = request.form['password_give']
     desc_receive = request.form['desc_give']
@@ -103,8 +102,7 @@ def worry_edit():
     # 일치하면 update하고 True return, 일치하지 않으면 False return
     if password == password_receive:
         db.worry.update_one({'board_id': board_id_receive},
-                            {'$set': {'nickname': nickname_receive,
-                                      'title':title_receive,
+                            {'$set': {'title':title_receive,
                                       'desc':desc_receive,
                                       'view_count':view_count}})
         return jsonify({'msg': True})
@@ -146,6 +144,33 @@ def comment_create():
 
     db.worry.update_one({"board_id": board_id_receive}, {"$push": {"comment": doc}})
     return jsonify({'msg': '댓글 등록 완료!'})
+
+@app.route('/comment/edit', methods=["POST"])
+def comment_edit():
+    board_id_receive = int(request.form['board_id_give'])
+    co_comment_id_receive = int(request.form['co_comment_id_give'])
+    co_password_receive = request.form['co_password_give']
+    co_desc_receive = request.form['co_desc_give']
+
+    # 해당 board_id 데이터를 조회
+    worry_detail = db.worry.find_one({'board_id': board_id_receive}, {'_id': False})
+
+    # 해당 board_id 데이터 중 (comment_id - 1)번 째 데이터
+    comment_detail = worry_detail['comment'][co_comment_id_receive - 1]
+    co_password = comment_detail['password']
+
+    # /worry/detail을 1번 호출하기 때문에 view_count -1
+    view_count = int(worry_detail['view_count']) - 1
+
+    # 비밀번호가 일치하는지 확인 후
+    # 일치하면 update하고 True return, 일치하지 않으면 False return
+    if co_password == co_password_receive:
+        db.worry.update_one({'board_id': board_id_receive, 'comment.comment_id': co_comment_id_receive},
+                            {'$set': {'view_count': view_count,
+                                      'comment.$.desc': co_desc_receive}})
+        return jsonify({'msg': True})
+    else:
+        return jsonify({'msg': False})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
