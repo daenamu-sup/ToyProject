@@ -72,7 +72,7 @@ def worry_create():
         'comment': [],
     }
     db.worry.insert_one(doc)
-    return jsonify({'msg': 'db등록 완료!'})
+    return jsonify({'msg': '등록 완료!'})
 
 @app.route('/worry/pw_check', methods=["POST"])
 def worry_pw_check():
@@ -129,7 +129,11 @@ def comment_create():
     co_password_receive = request.form['co_password_give']
     co_desc_receive = request.form['co_desc_give']
     comment_list = db.worry.find_one({'board_id': board_id_receive}, {'_id': False})['comment']
-    comment_id = len(comment_list) + 1
+    comment_idx = len(comment_list) - 1
+    if comment_idx < 0:
+        comment_id = 0
+    else:
+        comment_id = comment_list[comment_idx]['comment_id'] + 1
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     doc = {
@@ -194,11 +198,10 @@ def comment_delete():
     view_count = int(worry_detail['view_count']) - 1
 
     # 비밀번호가 일치하는지 확인 후
-    # 일치하면 update하고 True return, 일치하지 않으면 False return
+    # 일치하면 delete하고 True return, 일치하지 않으면 False return
     if co_password == co_password_receive:
-        db.worry.update_one({'board_id': board_id_receive, 'comment.comment_id': co_comment_id_receive},
-                            {'$set': {'view_count': view_count,
-                                      'comment.$.deleted_at': now}})
+        db.worry.update_one({'board_id': board_id_receive}, {'$set': {'view_count': view_count}})
+        db.worry.update_one({'board_id': board_id_receive}, {'$pull': {'comment': {'comment_id': co_comment_id_receive}}})
         return jsonify({'msg': True})
     else:
         return jsonify({'msg': False})
