@@ -1,0 +1,30 @@
+/* skech 테마 적용 된 밑줄 */
+.border-bottom-line {
+    border-width: 0 0 2px;
+    border-radius: 0 25px 225px 0/25px 0 25px 255px;
+    border-style: solid;
+    border-color: #333;
+}
+
+/* 작성자 이미지 */
+.post-img img {
+    max-width: 40px;
+    margin-right: 10px;
+}
+.comment-img img {
+    max-width: 40px;
+    margin-right: 15px;
+}
+
+/* 댓글 작성란 */
+.blog .comments .reply-form {
+    margin-top: 20px;
+    padding: 15px;
+}
+.blog .comments .reply-form input, .blog .comments .reply-form textarea{
+    padding: 10px 10px;
+    font-size: 14px;
+}
+.blog .comments .reply-form .form-group {
+    margin-bottom: 25px;
+}

@@ -6,7 +6,12 @@
 body {
   padding-top: 120px;
 }
-
+a {
+  text-decoration: none;
+}
+input, textarea {
+  font-family: "KyoboHand", cursive;
+}
 /*--------------------------------------------------------------
 # Header
 --------------------------------------------------------------*/
