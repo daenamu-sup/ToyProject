@@ -45,18 +45,28 @@ function detail() {
                         let comment_likes = comment[i]['likes'];
 
                         let temp_html = `<div class="comment mb-4 border-bottom">
-                                    <div class="d-flex">
-                                      <div class="comment-img"><img src="/static/assets/img/blog/comments-1.png" alt="comment-img" class="rounded-circle"></div>
-                                      <div class="w-100 comment-text">
-                                        <div class="co-nickname">${comment_nickname}</div>
-                                        <div class="small text-muted mb-2 co-created-at">${comment_created_at}</div>
-                                        <p class="co-desc">${comment_desc}</p>
-                                        <div class="mb-4">
-                                          <a href="#" class="text-muted co-edit-btn" data-id="${comment_id}">수정/삭제</a>
-                                        </div>
-                                      </div>
-                                    </div>
-                                </div>`;
+                                            <div class="d-flex">
+                                              <div class="comment-img"><img src="/static/assets/img/blog/comments-1.png" alt="comment-img" class="rounded-circle"></div>
+                                              <div class="w-100 comment-text">
+                                                <div class="co-nickname">${comment_nickname}</div>
+                                                <div class="small text-muted mb-2 co-created-at">${comment_created_at}</div>
+                                                <p class="co-desc">${comment_desc}</p>
+                                                <div class="mb-4">
+                                                  <a href="#" class="text-muted co-edit-btn" data-id="${comment_id}">수정/삭제</a>
+                                                </div>
+                                              </div>
+                                              <div>
+                                                <div class="btn-group">
+                                                  <button type="button" class="btn btn-outline-secondary ms-4 rounded co-likes-btn" data-id="${comment_id}">
+                                                    <div class="d-flex">
+                                                        <i class="bi bi-hand-thumbs-up me-1 co-likes-btn" data-id="${comment_id}"></i>
+                                                        <span class="co-likes-btn co-likes" data-id="${comment_id}">${comment_likes}</span>
+                                                    </div>
+                                                  </button>
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>`;
                         document.getElementById('comment').innerHTML += temp_html;
                     }
                 }
@@ -146,7 +156,7 @@ function del(board_id) {
     });
 }
 
-// 서버로 댓글 데이터 보내기
+// 서버로 생성할 댓글 데이터 보내기
 function co_create() {
     let nickname = document.getElementById('co-nickname').value;
     let password = document.getElementById('co-password').value;
@@ -179,10 +189,11 @@ function co_create() {
 }
 
 
-// 댓글 수정, 삭제
+// 댓글 수정, 삭제, 추천
 let nickname = '';
 let created_at = '';
 let desc = '';
+let likes = '';
 document.getElementById('comment').addEventListener('click', (e)=>{
     let comment_id = e.target.dataset.id;
     const comment_text_elem = e.target.parentElement.parentElement;
@@ -197,6 +208,7 @@ document.getElementById('comment').addEventListener('click', (e)=>{
         nickname = comment_text_elem.querySelector('.co-nickname').innerText;
         created_at = comment_text_elem.querySelector('.co-created-at').innerText;
         desc = comment_text_elem.querySelector('.co-desc').innerText;
+        likes = comment_text_elem.parentElement.querySelector('.co-likes').innerText;
 
         // input 태그에 기존 내용을 넣어 수정 입력폼 만들기
         let temp_html = `<div class="reply-form m-0 p-0">
@@ -223,6 +235,7 @@ document.getElementById('comment').addEventListener('click', (e)=>{
                               </div>
                           </div>`;
         comment_text_elem.innerHTML = temp_html;
+        comment_text_elem.parentElement.lastElementChild.remove();
     }
 
     // 댓글 수정 버튼 클릭
@@ -246,6 +259,7 @@ document.getElementById('comment').addEventListener('click', (e)=>{
     // 댓글 수정/삭제 취소 버튼 클릭
     if (e.target.classList.contains('co-cancel-btn')) {
         e.preventDefault();
+        const div_elem = comment_text_elem.parentElement.parentElement;
 
         // 다시 원래의 댓글 구조로 돌려놓기
         let temp_html = `<div class="co-nickname">${nickname}</div>
@@ -255,6 +269,17 @@ document.getElementById('comment').addEventListener('click', (e)=>{
                               <a href="#" class="text-muted co-edit-btn" data-id="${comment_id}">수정/삭제</a>
                             </div>`;
         comment_text_elem.parentElement.innerHTML = temp_html;
+
+        let div = document.createElement("div");
+        div.innerHTML = `<div class="btn-group">
+                          <button type="button" class="btn btn-outline-secondary ms-4 rounded co-likes-btn" data-id="${comment_id}">
+                            <div class="d-flex">
+                                <i class="bi bi-hand-thumbs-up me-1 co-likes-btn" data-id="${comment_id}"></i>
+                                <span class="co-likes-btn co-likes" data-id="${comment_id}">${likes}</span>
+                            </div>
+                          </button>
+                        </div>`;
+        div_elem.appendChild(div);
     }
 
     // 댓글 삭제 버튼 클릭
@@ -271,6 +296,11 @@ document.getElementById('comment').addEventListener('click', (e)=>{
                 co_edit_or_del('delete', comment_id, password_elem, desc_elem);
             }
         }
+    }
+
+    // 댓글 추천 버튼 클릭
+    if (e.target.classList.contains('co-likes-btn')) {
+        co_likes(board_id, comment_id);
     }
 })
 
@@ -296,6 +326,30 @@ function co_edit_or_del(edit_or_delete, comment_id, password_elem, desc_elem) {
                 alert('비밀번호가 일치하지 않습니다. 다시 확인해 주세요.');
                 password_elem.parentElement.querySelector('.co-password-fail').innerText = '비밀번호가 일치하지 않습니다. 다시 확인해 주세요.';
                 password_elem.value = '';
+            }
+        }
+    });
+}
+
+// 서버로 추천할 댓글 데이터 보내기
+function co_likes(board_id, comment_id) {
+    $.ajax({
+        type: 'POST',
+        url: '/comment/likes',
+        data: {
+            board_id_give: board_id,
+            co_comment_id_give: comment_id,
+        },
+        success: function (response) {
+
+            // likes 업데이트에 성공 했으면, alert 띄우고 detail 함수 호출
+            if (response['msg']) {
+                alert('좋아요 완료!')
+                detail();
+            }
+            // likes 업데이트에 실패하면, 안내 alert
+            else {
+                alert('문제가 발생했습니다. 관리자에게 문의해 주세요.');
             }
         }
     });
