@@ -45,18 +45,28 @@ function detail() {
                         let comment_likes = comment[i]['likes'];
 
                         let temp_html = `<div class="comment mb-4 border-bottom">
-                                    <div class="d-flex">
-                                      <div class="comment-img"><img src="/static/assets/img/blog/comments-1.png" alt="comment-img" class="rounded-circle"></div>
-                                      <div class="w-100 comment-text">
-                                        <div class="co-nickname">${comment_nickname}</div>
-                                        <div class="small text-muted mb-2 co-created-at">${comment_created_at}</div>
-                                        <p class="co-desc">${comment_desc}</p>
-                                        <div class="mb-4">
-                                          <a href="#" class="text-muted co-edit-btn" data-id="${comment_id}">수정/삭제</a>
-                                        </div>
-                                      </div>
-                                    </div>
-                                </div>`;
+                                            <div class="d-flex">
+                                              <div class="comment-img"><img src="/static/assets/img/blog/comments-1.png" alt="comment-img" class="rounded-circle"></div>
+                                              <div class="w-100 comment-text">
+                                                <div class="co-nickname">${comment_nickname}</div>
+                                                <div class="small text-muted mb-2 co-created-at">${comment_created_at}</div>
+                                                <p class="co-desc">${comment_desc}</p>
+                                                <div class="mb-4">
+                                                  <a href="#" class="text-muted co-edit-btn" data-id="${comment_id}">수정/삭제</a>
+                                                </div>
+                                              </div>
+                                              <div>
+                                                <div class="btn-group">
+                                                  <button type="button" class="btn btn-outline-secondary ms-4 rounded co-likes-btn" data-id="${comment_id}">
+                                                    <div class="d-flex">
+                                                        <i class="bi bi-hand-thumbs-up me-1 co-likes-btn" data-id="${comment_id}"></i>
+                                                        <span class="co-likes-btn" data-id="${comment_id}">${comment_likes}</span>
+                                                    </div>
+                                                  </button>
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>`;
                         document.getElementById('comment').innerHTML += temp_html;
                     }
                 }
@@ -146,7 +156,7 @@ function del(board_id) {
     });
 }
 
-// 서버로 댓글 데이터 보내기
+// 서버로 생성할 댓글 데이터 보내기
 function co_create() {
     let nickname = document.getElementById('co-nickname').value;
     let password = document.getElementById('co-password').value;
@@ -179,7 +189,7 @@ function co_create() {
 }
 
 
-// 댓글 수정, 삭제
+// 댓글 수정, 삭제, 추천
 let nickname = '';
 let created_at = '';
 let desc = '';
@@ -272,6 +282,11 @@ document.getElementById('comment').addEventListener('click', (e)=>{
             }
         }
     }
+
+    // 댓글 추천 버튼 클릭
+    if (e.target.classList.contains('co-likes-btn')) {
+        co_likes(board_id, comment_id);
+    }
 })
 
 // 서버로 수정하거나 삭제(deleted_at 업데이트)할 댓글 데이터 보내기
@@ -296,6 +311,30 @@ function co_edit_or_del(edit_or_delete, comment_id, password_elem, desc_elem) {
                 alert('비밀번호가 일치하지 않습니다. 다시 확인해 주세요.');
                 password_elem.parentElement.querySelector('.co-password-fail').innerText = '비밀번호가 일치하지 않습니다. 다시 확인해 주세요.';
                 password_elem.value = '';
+            }
+        }
+    });
+}
+
+// 서버로 추천할 댓글 데이터 보내기
+function co_likes(board_id, comment_id) {
+    $.ajax({
+        type: 'POST',
+        url: '/comment/likes',
+        data: {
+            board_id_give: board_id,
+            co_comment_id_give: comment_id,
+        },
+        success: function (response) {
+
+            // likes 업데이트에 성공 했으면, alert 띄우고 detail 함수 호출
+            if (response['msg']) {
+                alert('좋아요 완료!')
+                detail();
+            }
+            // likes 업데이트에 실패하면, 안내 alert
+            else {
+                alert('문제가 발생했습니다. 관리자에게 문의해 주세요.');
             }
         }
     });

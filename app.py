@@ -131,7 +131,7 @@ def comment_create():
     comment_list = db.worry.find_one({'board_id': board_id_receive}, {'_id': False})['comment']
     comment_idx = len(comment_list) - 1
     if comment_idx < 0:
-        comment_id = 0
+        comment_id = 1
     else:
         comment_id = comment_list[comment_idx]['comment_id'] + 1
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -201,6 +201,20 @@ def comment_delete():
     if co_password == co_password_receive:
         db.worry.update_one({'board_id': board_id_receive}, {'$set': {'view_count': view_count}})
         db.worry.update_one({'board_id': board_id_receive}, {'$pull': {'comment': {'comment_id': co_comment_id_receive}}})
+        return jsonify({'msg': True})
+    else:
+        return jsonify({'msg': False})
+
+@app.route('/comment/likes', methods=["POST"])
+def comment_likes():
+    board_id_receive = int(request.form['board_id_give'])
+    co_comment_id_receive = int(request.form['co_comment_id_give'])
+
+    # $inc 제한자를 이용해서 view_count - 1, likew + 1
+    updateResult = db.worry.update_one({'board_id': board_id_receive, 'comment.comment_id': co_comment_id_receive},
+                                        {'$inc': {'view_count': -1,
+                                                  'comment.$.likes': 1}})
+    if updateResult.modified_count == 1:
         return jsonify({'msg': True})
     else:
         return jsonify({'msg': False})
