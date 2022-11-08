@@ -60,7 +60,7 @@ function detail() {
                                                   <button type="button" class="btn btn-outline-secondary ms-4 rounded co-likes-btn" data-id="${comment_id}">
                                                     <div class="d-flex">
                                                         <i class="bi bi-hand-thumbs-up me-1 co-likes-btn" data-id="${comment_id}"></i>
-                                                        <span class="co-likes-btn" data-id="${comment_id}">${comment_likes}</span>
+                                                        <span class="co-likes-btn co-likes" data-id="${comment_id}">${comment_likes}</span>
                                                     </div>
                                                   </button>
                                                 </div>
@@ -193,6 +193,7 @@ function co_create() {
 let nickname = '';
 let created_at = '';
 let desc = '';
+let likes = '';
 document.getElementById('comment').addEventListener('click', (e)=>{
     let comment_id = e.target.dataset.id;
     const comment_text_elem = e.target.parentElement.parentElement;
@@ -207,6 +208,7 @@ document.getElementById('comment').addEventListener('click', (e)=>{
         nickname = comment_text_elem.querySelector('.co-nickname').innerText;
         created_at = comment_text_elem.querySelector('.co-created-at').innerText;
         desc = comment_text_elem.querySelector('.co-desc').innerText;
+        likes = comment_text_elem.parentElement.querySelector('.co-likes').innerText;
 
         // input 태그에 기존 내용을 넣어 수정 입력폼 만들기
         let temp_html = `<div class="reply-form m-0 p-0">
@@ -233,6 +235,7 @@ document.getElementById('comment').addEventListener('click', (e)=>{
                               </div>
                           </div>`;
         comment_text_elem.innerHTML = temp_html;
+        comment_text_elem.parentElement.lastElementChild.remove();
     }
 
     // 댓글 수정 버튼 클릭
@@ -256,6 +259,7 @@ document.getElementById('comment').addEventListener('click', (e)=>{
     // 댓글 수정/삭제 취소 버튼 클릭
     if (e.target.classList.contains('co-cancel-btn')) {
         e.preventDefault();
+        const div_elem = comment_text_elem.parentElement.parentElement;
 
         // 다시 원래의 댓글 구조로 돌려놓기
         let temp_html = `<div class="co-nickname">${nickname}</div>
@@ -265,6 +269,17 @@ document.getElementById('comment').addEventListener('click', (e)=>{
                               <a href="#" class="text-muted co-edit-btn" data-id="${comment_id}">수정/삭제</a>
                             </div>`;
         comment_text_elem.parentElement.innerHTML = temp_html;
+
+        let div = document.createElement("div");
+        div.innerHTML = `<div class="btn-group">
+                          <button type="button" class="btn btn-outline-secondary ms-4 rounded co-likes-btn" data-id="${comment_id}">
+                            <div class="d-flex">
+                                <i class="bi bi-hand-thumbs-up me-1 co-likes-btn" data-id="${comment_id}"></i>
+                                <span class="co-likes-btn co-likes" data-id="${comment_id}">${likes}</span>
+                            </div>
+                          </button>
+                        </div>`;
+        div_elem.appendChild(div);
     }
 
     // 댓글 삭제 버튼 클릭
