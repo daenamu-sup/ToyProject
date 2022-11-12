@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, jsonify
+from flask_bcrypt import Bcrypt
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 from pymongo import MongoClient
 
 import datetime
@@ -29,7 +31,7 @@ def edit():
 # 게시글 API 부분
 @app.route('/worry/list', methods=['GET'])
 def worry_list():
-    worry_list = list(db.worry.find({'deleted_at':None},{'_id':False}))
+    worry_list = list(db.worry.find({'deleted_at': None},{'_id': False, 'password': False, 'comment.password': False}))
     return jsonify({'worries':worry_list})
 
 @app.route('/worry/detail', methods=['GET'])
@@ -45,7 +47,8 @@ def worry_detail():
         # 들어 오는 순간 바로 조회수1 증가 하고 update.
         view_count = int(worry_detail['view_count']) + 1
         db.worry.update_one({"board_id": board_id}, {"$set": {"view_count": view_count}})
-        worry_detail = db.worry.find_one({'board_id': board_id, 'deleted_at': None}, {'_id': False})
+        worry_detail = db.worry.find_one({'board_id': board_id, 'deleted_at': None},
+                                         {'_id': False, 'password': False, 'comment.password': False})
         return jsonify({'msg': True, 'worry': worry_detail})
     else:
         return jsonify({'msg': False})
@@ -56,14 +59,18 @@ def worry_create():
     title_receive = request.form['title_give']
     password_receive = request.form['password_give']
     desc_receive = request.form['desc_give']
-    worries_list = list(db.worry.find({}, {'_id':False}))
+    worries_list = list(db.worry.find({}, {'_id': False}))
     board_id = len(worries_list)+1
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     view_count = 0
+
+    # Flask-Bcrypt를 이용하여 비밀번호 암호화
+    pw_hash = bcrypt.generate_password_hash(password_receive, 10).decode('utf-8')
+
     doc = {
         'board_id': board_id,
         'nickname': nickname_receive,
-        'password': password_receive,
+        'password': pw_hash,
         'title': title_receive,
         'desc': desc_receive,
         'view_count': view_count,
@@ -80,7 +87,7 @@ def worry_pw_check():
     password_receive = request.form['password_give']
     worry_detail = db.worry.find_one({'board_id': board_id_receive}, {'_id': False})
     password = worry_detail['password']
-    if password == password_receive:
+    if pw_date_check(worry_detail) and bcrypt.check_password_hash(password, password_receive):
         return jsonify({'msg': True})
     else:
         return jsonify({'msg': False})
@@ -100,7 +107,7 @@ def worry_edit():
 
     # 비밀번호가 일치하는지 확인 후
     # 일치하면 update하고 True return, 일치하지 않으면 False return
-    if password == password_receive:
+    if pw_date_check(worry_detail) and bcrypt.check_password_hash(password, password_receive):
         db.worry.update_one({'board_id': board_id_receive},
                             {'$set': {'title':title_receive,
                                       'desc':desc_receive,
@@ -136,10 +143,13 @@ def comment_create():
         comment_id = comment_list[comment_idx]['comment_id'] + 1
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+    # Flask-Bcrypt를 이용하여 비밀번호 암호화
+    pw_hash = bcrypt.generate_password_hash(co_password_receive, 10).decode('utf-8')
+
     doc = {
         'comment_id': comment_id,
         'nickname': co_nickname_receive,
-        'password': co_password_receive,
+        'password': pw_hash,
         'desc': co_desc_receive,
         'likes': 0,
         'created_at': now,
@@ -172,7 +182,7 @@ def comment_edit():
 
     # 비밀번호가 일치하는지 확인 후
     # 일치하면 update하고 True return, 일치하지 않으면 False return
-    if co_password == co_password_receive:
+    if pw_date_check(comment_detail) and bcrypt.check_password_hash(co_password, co_password_receive):
         db.worry.update_one({'board_id': board_id_receive, 'comment.comment_id': co_comment_id_receive},
                             {'$set': {'view_count': view_count,
                                       'comment.$.desc': co_desc_receive}})
@@ -198,7 +208,7 @@ def comment_delete():
 
     # 비밀번호가 일치하는지 확인 후
     # 일치하면 delete하고 True return, 일치하지 않으면 False return
-    if co_password == co_password_receive:
+    if pw_date_check(comment_detail) and bcrypt.check_password_hash(co_password, co_password_receive):
         db.worry.update_one({'board_id': board_id_receive}, {'$set': {'view_count': view_count}})
         db.worry.update_one({'board_id': board_id_receive}, {'$pull': {'comment': {'comment_id': co_comment_id_receive}}})
         return jsonify({'msg': True})
@@ -210,7 +220,7 @@ def comment_likes():
     board_id_receive = int(request.form['board_id_give'])
     co_comment_id_receive = int(request.form['co_comment_id_give'])
 
-    # $inc 제한자를 이용해서 view_count - 1, likew + 1
+    # $inc 제한자를 이용해서 view_count - 1, like + 1
     updateResult = db.worry.update_one({'board_id': board_id_receive, 'comment.comment_id': co_comment_id_receive},
                                         {'$inc': {'view_count': -1,
                                                   'comment.$.likes': 1}})
@@ -218,6 +228,16 @@ def comment_likes():
         return jsonify({'msg': True})
     else:
         return jsonify({'msg': False})
+
+# 비밀번호 암호화 시점(2022.11.09) 이전 글들은 비밀번호 검사 시 오류 문구 출력
+def pw_date_check(detail):
+    created_at = datetime.datetime.strptime(detail['created_at'], '%Y-%m-%d %H:%M:%S')
+    target_date = datetime.datetime.strptime('2022-11-09 09:00:00', '%Y-%m-%d %H:%M:%S')
+    if created_at > target_date:
+        return True
+    else:
+        return False
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
